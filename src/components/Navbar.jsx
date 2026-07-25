@@ -3,55 +3,74 @@ import { useAuth } from '../contexts/AuthContext'
 
 export default function Sidebar() {
   const { user, account, logout } = useAuth()
-  const location = useLocation()
+  const loc = useLocation()
 
-  const navs = [
-    { path: '/dashboard',    label: 'Accounts Summary', icon: '🏛️' },
-    { path: '/transactions', label: 'Passbook & Statement', icon: '📋' },
-    { path: '/transfer',     label: 'Fund Transfer (NEFT/RTGS)', icon: '💸' },
-    { path: '/deposit',      label: 'Instant E-Deposit', icon: '💳' },
-    { path: '/documents',    label: 'E-Statements & Vault', icon: '📁' },
-    { path: '/profile',      label: 'Customer Profile', icon: '👤' },
+  const is = (p) => loc.pathname === p
+
+  const mainNav = [
+    { path: '/dashboard',    icon: '🏠', label: 'My Accounts' },
+    { path: '/transactions', icon: '📜', label: 'Passbook / Statement' },
+    { path: '/transfer',     icon: '↗️',  label: 'Fund Transfer' },
+    { path: '/deposit',      icon: '💳',  label: 'Deposit' },
+    { path: '/documents',    icon: '📂',  label: 'e-Documents' },
+    { path: '/profile',      icon: '👤',  label: 'My Profile' },
   ]
-
-  if (user?.role === 'admin') {
-    navs.push({ path: '/admin', label: 'Branch Audit Console', icon: '⚙️' })
-  }
 
   return (
     <aside className="sidebar">
+      {/* Brand */}
       <div className="sidebar-brand">
-        <div className="brand-icon">N</div>
+        <img src="/logo.png" alt="NexusBank Logo" style={{ height: 36, width: 36, objectFit: 'contain', borderRadius: 4 }} />
         <div>
-          <div className="brand-name">NexusBank</div>
-          <div style={{ fontSize: '.62rem', color: '#94a3b8', letterSpacing: '.5px' }}>OFFICIAL CORPORATE BANKING</div>
+          <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#fff', letterSpacing: '-.3px' }}>NexusBank</div>
+          <div style={{ fontSize: '.6rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.6px' }}>Net Banking</div>
         </div>
       </div>
 
-      <div className="sidebar-nav">
-        <div className="nav-section-label">MAIN SERVICES</div>
-        {navs.map(n => (
-          <Link
-            key={n.path}
-            to={n.path}
-            className={`nav-item ${location.pathname === n.path ? 'active' : ''}`}
-          >
+      {/* Nav */}
+      <nav className="sidebar-nav">
+        <div className="nav-section-label">Services</div>
+        {mainNav.map(n => (
+          <Link key={n.path} to={n.path}
+            className={`nav-item${is(n.path) ? ' active' : ''}`}>
             <span className="nav-icon">{n.icon}</span>
             <span>{n.label}</span>
           </Link>
         ))}
-      </div>
 
+        {user?.role === 'admin' && (
+          <>
+            <div className="nav-section-label" style={{ marginTop: '.5rem' }}>Management</div>
+            <Link to="/admin"
+              className={`nav-item${is('/admin') ? ' active' : ''}`}>
+              <span className="nav-icon">⚙️</span>
+              <span>Branch Console</span>
+            </Link>
+          </>
+        )}
+      </nav>
+
+      {/* User footer */}
       <div className="sidebar-footer">
-        <div className="sidebar-user mb-2">
-          <div className="avatar">{(user?.username || 'U')[0].toUpperCase()}</div>
-          <div className="user-info">
-            <div className="user-name">{user?.username}</div>
-            <div className="user-role">A/C: {account?.account_no || 'Standard'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', marginBottom: '.6rem' }}>
+          <div className="avatar" style={{ background: 'linear-gradient(135deg, #005691, #00a8cc)' }}>
+            {(user?.username || 'U')[0].toUpperCase()}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: '.84rem', color: '#f1f5f9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user?.username}
+            </div>
+            <div style={{ fontSize: '.68rem', color: '#94a3b8' }}>
+              {account?.account_no || 'Standard Savings'}
+            </div>
           </div>
         </div>
-        <button onClick={logout} className="btn btn-ghost btn-sm btn-full" style={{ color: '#f87171', borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)' }}>
-          🔒 Logout NetBanking
+        <button onClick={logout} style={{
+          width: '100%', padding: '.45rem .75rem', background: 'rgba(239,68,68,.1)',
+          border: '1px solid rgba(239,68,68,.25)', borderRadius: 4, color: '#f87171',
+          fontSize: '.78rem', fontWeight: 700, cursor: 'pointer', textAlign: 'center',
+        }}>
+          🔒 Logout
         </button>
       </div>
     </aside>
