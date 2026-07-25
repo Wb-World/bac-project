@@ -3,116 +3,154 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
-  const [form, setForm]     = useState({ username: '', password: '' })
-  const [error, setError]   = useState('')
-  const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
   const { login } = useAuth()
   const navigate  = useNavigate()
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setError(''); setLoading(true)
+    setError('')
+    setLoading(true)
     try {
-      await login(form)
+      await login({ username, password })
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.error || 'Invalid User ID or password. Please try again.')
+      setError(err.response?.data?.error || 'Invalid User ID or password. Please verify credentials.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #001730 0%, #0a2540 50%, #003366 100%)', display: 'flex', flexDirection: 'column', fontFamily: "'Open Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#0a2540', color: '#1e293b', fontFamily: "'Open Sans', sans-serif" }}>
 
-      {/* Top ticker */}
-      <div style={{ background: '#000f1e', borderBottom: '2px solid #ff9900', padding: '.3rem 2rem', fontSize: '.72rem', color: '#94a3b8', display: 'flex', justifyContent: 'space-between' }}>
-        <span>🔐 Secure Session · 256-bit TLS Encryption Active</span>
-        <span>📞 Helpdesk: 1800-11-2211</span>
+      {/* Top Banner */}
+      <div style={{ background: '#001730', borderBottom: '2px solid #ff9900', padding: '.4rem 2rem', fontSize: '.75rem', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>🔒 Official NetBanking Portal · NexusBank Security System</span>
+        <span>Customer Support: 1800-11-2211 (Toll Free)</span>
       </div>
 
       {/* Header */}
-      <header style={{ padding: '.8rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '.7rem', textDecoration: 'none' }}>
-          <img src="/logo.png" alt="NexusBank" style={{ height: 36, objectFit: 'contain', borderRadius: 4 }} />
+      <header style={{ padding: '1rem 2rem', background: '#0a2540', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '.75rem', textDecoration: 'none' }}>
+          <img src="/logo.png" alt="NexusBank Logo" style={{ height: 38, width: 38, objectFit: 'contain', borderRadius: 4 }} />
           <div>
-            <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>NexusBank</div>
-            <div style={{ fontSize: '.58rem', color: '#ff9900', letterSpacing: '1px', textTransform: 'uppercase' }}>Online Banking</div>
+            <div style={{ color: '#ffffff', fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-.3px' }}>NexusBank</div>
+            <div style={{ color: '#ff9900', fontSize: '.62rem', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>Corporate & Retail NetBanking</div>
           </div>
         </Link>
-        <Link to="/register" style={{ background: '#ff9900', color: '#001730', padding: '.45rem 1.1rem', borderRadius: 4, fontWeight: 800, fontSize: '.8rem', textDecoration: 'none' }}>
-          New Registration
+        <Link to="/register" style={{ background: '#ff9900', color: '#001730', padding: '.5rem 1.2rem', borderRadius: 4, fontWeight: 800, fontSize: '.82rem', textDecoration: 'none' }}>
+          New User Registration
         </Link>
       </header>
 
-      {/* Main content */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
-        <div style={{ width: '100%', maxWidth: 420 }}>
+      {/* Login Box Container */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '3rem 1rem' }}>
+        <div style={{ background: '#ffffff', borderRadius: 8, width: '100%', maxWidth: 440, boxShadow: '0 15px 35px rgba(0,0,0,0.3)', borderTop: '5px solid #ff9900', overflow: 'hidden' }}>
 
-          {/* Card */}
-          <div style={{ background: '#ffffff', borderRadius: 8, boxShadow: '0 20px 50px rgba(0,0,0,.4)', borderTop: '5px solid #ff9900', overflow: 'hidden' }}>
-
-            {/* Card header stripe */}
-            <div style={{ background: '#0a2540', padding: '1.2rem 1.8rem', display: 'flex', alignItems: 'center', gap: '.7rem' }}>
-              <img src="/logo.png" alt="NexusBank" style={{ height: 30, objectFit: 'contain', borderRadius: 3 }} />
-              <div>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: '.95rem' }}>NetBanking Portal</div>
-                <div style={{ color: '#94a3b8', fontSize: '.68rem' }}>Retail &amp; Corporate Accounts</div>
-              </div>
-            </div>
-
-            <div style={{ padding: '1.8rem' }}>
-              {error && (
-                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 4, padding: '.7rem .9rem', fontSize: '.82rem', color: '#991b1b', marginBottom: '1rem', display: 'flex', gap: '.5rem' }}>
-                  <span>⚠</span> {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '.9rem' }}>
-                  <label style={{ display: 'block', fontSize: '.78rem', fontWeight: 700, color: '#374151', marginBottom: '.3rem' }}>
-                    User ID / Customer ID
-                  </label>
-                  <input
-                    type="text" required autoFocus
-                    value={form.username}
-                    onChange={e => setForm(p => ({ ...p, username: e.target.value }))}
-                    placeholder="Enter your User ID"
-                    style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: 4, padding: '.65rem .85rem', fontSize: '.88rem', outline: 'none', transition: 'border-color .15s' }}
-                  />
-                </div>
-                <div style={{ marginBottom: '1.2rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.3rem' }}>
-                    <label style={{ fontSize: '.78rem', fontWeight: 700, color: '#374151' }}>Password</label>
-                    <a href="#" style={{ fontSize: '.72rem', color: '#005691', fontWeight: 600 }}>Forgot Password?</a>
-                  </div>
-                  <input
-                    type="password" required
-                    value={form.password}
-                    onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
-                    placeholder="••••••••"
-                    style={{ width: '100%', border: '1px solid #d1d5db', borderRadius: 4, padding: '.65rem .85rem', fontSize: '.88rem', outline: 'none' }}
-                  />
-                </div>
-                <button type="submit" disabled={loading} style={{ width: '100%', background: '#005691', color: '#fff', border: 'none', borderRadius: 4, padding: '.75rem', fontWeight: 700, fontSize: '.9rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? .7 : 1 }}>
-                  {loading ? 'Authenticating…' : 'Login to NetBanking →'}
-                </button>
-              </form>
-
-              <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9', fontSize: '.78rem', color: '#64748b' }}>
-                First time here? <Link to="/register" style={{ color: '#005691', fontWeight: 700 }}>Register for NetBanking</Link>
-              </div>
-            </div>
-
-            {/* Security footer */}
-            <div style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '.75rem 1.8rem', display: 'flex', alignItems: 'center', gap: '.5rem', fontSize: '.7rem', color: '#64748b' }}>
-              <span>🔒</span>
-              <span>Never share your password or OTP. NexusBank will never ask for them.</span>
+          <div style={{ background: '#001730', padding: '1.2rem 1.6rem', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '.8rem' }}>
+            <img src="/logo.png" alt="NexusBank" style={{ height: 32, width: 32, objectFit: 'contain' }} />
+            <div>
+              <h2 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', margin: 0 }}>NetBanking Login</h2>
+              <p style={{ fontSize: '.72rem', color: '#94a3b8', margin: 0 }}>Enter customer ID and password to access dashboard</p>
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '1rem', fontSize: '.72rem', color: '#94a3b8' }}>
-            © 2026 NexusBank Ltd · RBI Regulated · 256-bit SSL Secured
+          <div style={{ padding: '1.8rem' }}>
+            {error && (
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 4, padding: '.75rem 1rem', color: '#991b1b', fontSize: '.84rem', marginBottom: '1.2rem' }}>
+                <strong>Login Error:</strong> {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '1.2rem' }}>
+                <label htmlFor="user-id-input" style={{ display: 'block', fontSize: '.82rem', fontWeight: 700, color: '#0a2540', marginBottom: '.4rem' }}>
+                  User ID / Customer ID
+                </label>
+                <input
+                  id="user-id-input"
+                  name="username"
+                  type="text"
+                  required
+                  autoFocus
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your User ID (e.g. alice, bob, admin)"
+                  style={{
+                    width: '100%',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: 4,
+                    padding: '.75rem .9rem',
+                    fontSize: '.9rem',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.4rem' }}>
+                <label htmlFor="password-input" style={{ display: 'block', fontSize: '.82rem', fontWeight: 700, color: '#0a2540', marginBottom: '.4rem' }}>
+                  Password
+                </label>
+                <input
+                  id="password-input"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter Password"
+                  style={{
+                    width: '100%',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: 4,
+                    padding: '.75rem .9rem',
+                    fontSize: '.9rem',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  background: '#005691',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '.8rem',
+                  fontWeight: 800,
+                  fontSize: '.92rem',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  boxShadow: '0 2px 6px rgba(0,86,145,0.3)'
+                }}
+              >
+                {loading ? 'Authenticating Credentials...' : 'Login to NetBanking →'}
+              </button>
+            </form>
+
+            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', textAlign: 'center', fontSize: '.8rem', color: '#64748b' }}>
+              Don't have a NetBanking account?{' '}
+              <Link to="/register" style={{ color: '#005691', fontWeight: 700, textDecoration: 'none' }}>
+                Register Online
+              </Link>
+            </div>
+          </div>
+
+          <div style={{ background: '#f8fafc', padding: '.75rem 1.5rem', borderTop: '1px solid #e2e8f0', fontSize: '.72rem', color: '#64748b', textAlign: 'center' }}>
+            🔒 Always verify that the URL displays <code>https://bac-project.vercel.app</code>
           </div>
         </div>
       </div>
