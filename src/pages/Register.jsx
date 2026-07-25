@@ -50,7 +50,7 @@ export default function Register() {
           </div>
           <div className="auth-title">Create an Account</div>
           <div className="auth-sub" style={{ marginBottom: '1rem' }}>
-            Join NexusBank <span className="badge badge-vuln">BAC-2</span>
+            {/* Join NexusBank <span className="badge badge-vuln">BAC-2</span> */}
           </div>
 
           {error && (
@@ -60,10 +60,10 @@ export default function Register() {
             </div>
           )}
 
-          <div className="alert alert-vuln" style={{ fontSize: '.75rem', marginBottom: '1.2rem' }}>
+          {/* <div className="alert alert-vuln" style={{ fontSize: '.75rem', marginBottom: '1.2rem' }}>
             <div><strong>[BAC-2 Demo]</strong> Role parameter is accepted from request body.</div>
             <div style={{ color: 'var(--mt)', marginTop: 2 }}>You can register as an admin using the role selector below or via HTTP payload.</div>
-          </div>
+          </div> */}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -110,7 +110,7 @@ export default function Register() {
               {/* BAC-2 Role Manipulator */}
               <div className="form-group">
                 <label className="form-label" htmlFor="reg-role" style={{ color: 'var(--orange)' }}>
-                  Role (BAC-2)
+                  select user
                 </label>
                 <select
                   id="reg-role"

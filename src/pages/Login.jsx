@@ -83,10 +83,10 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="divider-text" style={{ margin: '1.2rem 0' }}>Quick Login</div>
+          {/* <div className="divider-text" style={{ margin: '1.2rem 0' }}>Quick Login</div> */}
 
           {/* Seed credential shortcuts */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
+          {/* <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
             {[
               { u: 'admin',   p: 'admin123',   label: 'Admin',   role: 'admin' },
               { u: 'alice',   p: 'alice123',   label: 'Alice',   role: 'user'  },
@@ -106,7 +106,7 @@ export default function Login() {
                 </div>
               </button>
             ))}
-          </div>
+          </div> */}
 
           <div className="text-center mt-3">
             <span className="text-muted text-sm">No account? </span>
