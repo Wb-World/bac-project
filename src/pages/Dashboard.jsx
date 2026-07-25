@@ -16,7 +16,10 @@ export default function Dashboard() {
   const [msg, setMsg] = useState({ type: '', text: '' })
 
   const loadTxs = useCallback(async () => {
-    if (!account?.id) return
+    if (!account?.id) {
+      setLoading(false)
+      return
+    }
     try {
       const { data } = await getTransactions(account.id, { limit: 8 })
       setTxs(data.transactions || [])
