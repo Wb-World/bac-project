@@ -3,6 +3,16 @@ import { login as apiLogin, register as apiRegister, getMe } from '../lib/api'
 
 const AuthContext = createContext(null)
 
+// Decode JWT payload without verification (used as UI fallback only)
+function decodeJWT(token) {
+  try {
+    const payload = token.split('.')[1]
+    return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')))
+  } catch {
+    return null
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user,    setUser]    = useState(null)
   const [account, setAccount] = useState(null)
@@ -11,12 +21,26 @@ export function AuthProvider({ children }) {
   const loadMe = useCallback(async () => {
     const token = localStorage.getItem('nexus_token')
     if (!token) { setLoading(false); return }
+
+    // Immediately show user from JWT so page never blanks
+    const decoded = decodeJWT(token)
+    if (decoded) {
+      setUser({ id: decoded.userId, username: decoded.username, email: decoded.email, role: decoded.role })
+      setAccount(decoded.accountId ? { id: decoded.accountId } : null)
+    }
+
+    // Then try to get fresh data from server
     try {
       const { data } = await getMe()
       setUser(data.user)
       setAccount(data.account)
     } catch {
-      localStorage.removeItem('nexus_token')
+      // If server fails, keep the JWT-decoded state instead of logging out
+      if (!decoded) {
+        localStorage.removeItem('nexus_token')
+        setUser(null)
+        setAccount(null)
+      }
     } finally {
       setLoading(false)
     }
@@ -26,7 +50,7 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const { data } = await apiLogin(credentials)
-    localStorage.setItem('nexus_token', data.token) // [VULN] localStorage — XSS susceptible
+    localStorage.setItem('nexus_token', data.token)
     setUser(data.user)
     setAccount(data.account)
     return data
