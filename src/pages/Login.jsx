@@ -16,19 +16,21 @@ export default function Login() {
       await login(form)
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Check credentials.')
+      setError(err.response?.data?.error || 'Authentication failed. Please verify user ID & password.')
     } finally {
       setLoading(false)
     }
   }
 
-  const quickLogin = (username, password) => {
-    setForm({ username, password })
-    setTimeout(() => document.getElementById('login-submit')?.click(), 100)
-  }
-
   return (
     <div className="auth-page">
+      <div className="bank-ticker-bar">
+        <div className="bank-ticker-left">
+          <span className="ticker-badge">SECURE BANKING</span>
+          <span>Official Corporate NetBanking Portal. Check URL starts with https://</span>
+        </div>
+      </div>
+
       <nav className="topnav">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
@@ -37,80 +39,63 @@ export default function Login() {
           </Link>
         </div>
         <div className="topnav-right">
-          <Link to="/register" className="btn btn-primary btn-sm">Open Account →</Link>
+          <Link to="/register" className="btn btn-accent btn-sm">Register NetBanking →</Link>
         </div>
       </nav>
 
       <div className="auth-container">
-        <div className="auth-box slide-up">
+        <div className="auth-box">
           <div className="auth-logo">
             <div className="brand-icon">N</div>
-            <span className="brand-name">NexusBank</span>
+            <div>
+              <div className="auth-title">NetBanking Login</div>
+              <div style={{ fontSize: '.72rem', color: '#64748b' }}>Retail & Corporate Banking Portal</div>
+            </div>
           </div>
-          <div className="auth-title">Welcome back</div>
-          <div className="auth-sub" style={{ marginBottom: '1.5rem' }}>Sign in to access your account</div>
+
+          <div className="security-banner">
+            <span>🔒</span>
+            <div>Use virtual keyboard or ensure caps lock is off. Never share credentials.</div>
+          </div>
 
           {error && (
             <div className="alert alert-error">
-              <span className="alert-icon">⚠</span>
+              <span>⚠</span>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label" htmlFor="username">Username</label>
+              <label className="form-label" htmlFor="username">User ID / Customer ID</label>
               <input
                 id="username" type="text" className="form-input"
-                placeholder="Enter your username"
+                placeholder="Enter User ID"
                 value={form.username}
                 onChange={e => setForm(p => ({ ...p, username: e.target.value }))}
                 required autoFocus
               />
             </div>
+
             <div className="form-group">
               <label className="form-label" htmlFor="password">Password</label>
               <input
                 id="password" type="password" className="form-input"
-                placeholder="Enter your password"
+                placeholder="Enter Password"
                 value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                 required
               />
             </div>
+
             <button id="login-submit" type="submit" className="btn btn-primary btn-full mt-3" disabled={loading}>
-              {loading ? <><span className="spin" style={{ width: 14, height: 14, border: '2px solid #0a0e14', borderTopColor: 'transparent', borderRadius: '50%', display: 'inline-block' }} /> Signing in…</> : 'Sign In →'}
+              {loading ? 'Authenticating...' : 'Login to NetBanking →'}
             </button>
           </form>
 
-          {/* <div className="divider-text" style={{ margin: '1.2rem 0' }}>Quick Login</div> */}
-
-          {/* Seed credential shortcuts */}
-          {/* <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
-            {[
-              { u: 'admin',   p: 'admin123',   label: 'Admin',   role: 'admin' },
-              { u: 'alice',   p: 'alice123',   label: 'Alice',   role: 'user'  },
-              { u: 'bob',     p: 'bob123',     label: 'Bob',     role: 'user'  },
-              { u: 'charlie', p: 'charlie123', label: 'Charlie', role: 'user'  },
-            ].map(({ u, p, label, role }) => (
-              <button
-                key={u}
-                className="btn btn-ghost btn-sm"
-                style={{ justifyContent: 'flex-start', gap: '.5rem' }}
-                onClick={() => quickLogin(u, p)}
-              >
-                <div className="avatar avatar-sm">{label[0]}</div>
-                <div style={{ textAlign: 'left', lineHeight: 1.3 }}>
-                  <div style={{ fontSize: '.78rem', fontWeight: 600 }}>{label}</div>
-                  <div style={{ fontSize: '.65rem', color: role === 'admin' ? 'var(--orange)' : 'var(--mt)' }}>{role}</div>
-                </div>
-              </button>
-            ))}
-          </div> */}
-
           <div className="text-center mt-3">
-            <span className="text-muted text-sm">No account? </span>
-            <Link to="/register" style={{ color: 'var(--g)', fontSize: '.84rem', fontWeight: 600 }}>Register here</Link>
+            <span className="text-muted text-sm">New to NetBanking? </span>
+            <Link to="/register" style={{ color: '#005691', fontSize: '.84rem', fontWeight: 700 }}>Register Customer Account</Link>
           </div>
         </div>
       </div>

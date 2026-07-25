@@ -1,82 +1,58 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-
-const NAV = [
-  { to: '/dashboard',    icon: '◈',  label: 'Dashboard'     },
-  { to: '/transactions', icon: '↕',  label: 'Transactions'  },
-  { to: '/transfer',     icon: '→',  label: 'Transfer'      },
-  { to: '/deposit',      icon: '+',  label: 'Deposit'       },
-  { to: '/documents',    icon: '📄', label: 'Documents',    badge: 'BAC-5' },
-  { to: '/profile',      icon: '⚙',  label: 'Profile'       },
-]
-const ADMIN_NAV = [
-  { to: '/admin',        icon: '🛡',  label: 'Admin Panel',  badge: 'BAC-3' },
-]
 
 export default function Sidebar() {
   const { user, account, logout } = useAuth()
-  const navigate = useNavigate()
+  const location = useLocation()
 
-  const handleLogout = () => { logout(); navigate('/') }
+  const navs = [
+    { path: '/dashboard',    label: 'Accounts Summary', icon: '🏛️' },
+    { path: '/transactions', label: 'Passbook & Statement', icon: '📋' },
+    { path: '/transfer',     label: 'Fund Transfer (NEFT/RTGS)', icon: '💸' },
+    { path: '/deposit',      label: 'Instant E-Deposit', icon: '💳' },
+    { path: '/documents',    label: 'E-Statements & Vault', icon: '📁' },
+    { path: '/profile',      label: 'Customer Profile', icon: '👤' },
+  ]
+
+  if (user?.role === 'admin') {
+    navs.push({ path: '/admin', label: 'Branch Audit Console', icon: '⚙️' })
+  }
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="brand-icon">N</div>
-        <span className="brand-name">NexusBank</span>
+        <div>
+          <div className="brand-name">NexusBank</div>
+          <div style={{ fontSize: '.62rem', color: '#94a3b8', letterSpacing: '.5px' }}>OFFICIAL CORPORATE BANKING</div>
+        </div>
       </div>
 
-      <nav className="sidebar-nav">
-        <div className="nav-section-label">Banking</div>
-        {NAV.map(({ to, icon, label, badge }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-            <span className="nav-icon">{icon}</span>
-            {label}
-            {badge && <span className="nav-badge">{badge}</span>}
-          </NavLink>
+      <div className="sidebar-nav">
+        <div className="nav-section-label">MAIN SERVICES</div>
+        {navs.map(n => (
+          <Link
+            key={n.path}
+            to={n.path}
+            className={`nav-item ${location.pathname === n.path ? 'active' : ''}`}
+          >
+            <span className="nav-icon">{n.icon}</span>
+            <span>{n.label}</span>
+          </Link>
         ))}
-
-        {user?.role === 'admin' && (
-          <>
-            <div className="nav-section-label" style={{ marginTop: '.5rem' }}>Admin</div>
-            {ADMIN_NAV.map(({ to, icon, label, badge }) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-                <span className="nav-icon">{icon}</span>
-                {label}
-                {badge && <span className="nav-badge">{badge}</span>}
-              </NavLink>
-            ))}
-          </>
-        )}
-
-        <div className="nav-section-label" style={{ marginTop: '.5rem' }}>Research</div>
-        <a href="/api/vulns" target="_blank" className="nav-item">
-          <span className="nav-icon">🐛</span>
-          Vuln Map
-          <span className="nav-badge-green nav-badge">API</span>
-        </a>
-        <NavLink to="/exploit-guide" className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}>
-          <span className="nav-icon">📖</span>
-          Exploit Guide
-        </NavLink>
-      </nav>
+      </div>
 
       <div className="sidebar-footer">
-        {user && (
-          <div className="sidebar-user" onClick={handleLogout} title="Click to logout">
-            <div className="avatar">{user.username?.[0]?.toUpperCase()}</div>
-            <div className="user-info">
-              <div className="user-name">{user.username}</div>
-              <div className="user-role">
-                {user.role === 'admin'
-                  ? '⚡ Admin · click to logout'
-                  : account
-                    ? `$${parseFloat(account.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                    : 'click to logout'}
-              </div>
-            </div>
+        <div className="sidebar-user mb-2">
+          <div className="avatar">{(user?.username || 'U')[0].toUpperCase()}</div>
+          <div className="user-info">
+            <div className="user-name">{user?.username}</div>
+            <div className="user-role">A/C: {account?.account_no || 'Standard'}</div>
           </div>
-        )}
+        </div>
+        <button onClick={logout} className="btn btn-ghost btn-sm btn-full" style={{ color: '#f87171', borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)' }}>
+          🔒 Logout NetBanking
+        </button>
       </div>
     </aside>
   )

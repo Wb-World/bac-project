@@ -8,7 +8,7 @@ export default function Register() {
     email: '',
     password: '',
     initialDeposit: 100,
-    role: 'user' // BAC-2: Client controls this field
+    role: 'user'
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -30,6 +30,13 @@ export default function Register() {
 
   return (
     <div className="auth-page">
+      <div className="bank-ticker-bar">
+        <div className="bank-ticker-left">
+          <span className="ticker-badge">ONLINE REGISTRATION</span>
+          <span>Open a Instant Savings Account online with e-KYC.</span>
+        </div>
+      </div>
+
       <nav className="topnav">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
@@ -38,49 +45,43 @@ export default function Register() {
           </Link>
         </div>
         <div className="topnav-right">
-          <Link to="/login" className="btn btn-ghost btn-sm">Sign In</Link>
+          <Link to="/login" className="btn btn-ghost btn-sm" style={{ color: '#fff' }}>Login NetBanking</Link>
         </div>
       </nav>
 
       <div className="auth-container">
-        <div className="auth-box slide-up">
+        <div className="auth-box">
           <div className="auth-logo">
             <div className="brand-icon">N</div>
-            <span className="brand-name">NexusBank</span>
-          </div>
-          <div className="auth-title">Create an Account</div>
-          <div className="auth-sub" style={{ marginBottom: '1rem' }}>
-            {/* Join NexusBank <span className="badge badge-vuln">BAC-2</span> */}
+            <div>
+              <div className="auth-title">Customer Account Registration</div>
+              <div style={{ fontSize: '.72rem', color: '#64748b' }}>Instant Online Account Opening</div>
+            </div>
           </div>
 
           {error && (
             <div className="alert alert-error">
-              <span className="alert-icon">⚠</span>
+              <span>⚠</span>
               {error}
             </div>
           )}
 
-          {/* <div className="alert alert-vuln" style={{ fontSize: '.75rem', marginBottom: '1.2rem' }}>
-            <div><strong>[BAC-2 Demo]</strong> Role parameter is accepted from request body.</div>
-            <div style={{ color: 'var(--mt)', marginTop: 2 }}>You can register as an admin using the role selector below or via HTTP payload.</div>
-          </div> */}
-
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label" htmlFor="reg-username">Username</label>
+              <label className="form-label" htmlFor="reg-username">User ID / Username</label>
               <input
                 id="reg-username" type="text" className="form-input"
-                placeholder="Choose username"
+                placeholder="Choose Customer User ID"
                 value={form.username}
                 onChange={e => setForm(p => ({ ...p, username: e.target.value }))}
                 required autoFocus
               />
             </div>
             <div className="form-group">
-              <label className="form-label" htmlFor="reg-email">Email</label>
+              <label className="form-label" htmlFor="reg-email">Email Address</label>
               <input
                 id="reg-email" type="email" className="form-input"
-                placeholder="your@email.com"
+                placeholder="customer@email.com"
                 value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
               />
@@ -89,7 +90,7 @@ export default function Register() {
               <label className="form-label" htmlFor="reg-password">Password</label>
               <input
                 id="reg-password" type="password" className="form-input"
-                placeholder="Choose password"
+                placeholder="Set Account Password"
                 value={form.password}
                 onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
                 required
@@ -98,7 +99,7 @@ export default function Register() {
 
             <div className="grid-2">
               <div className="form-group">
-                <label className="form-label" htmlFor="reg-deposit">Initial Deposit ($)</label>
+                <label className="form-label" htmlFor="reg-deposit">Opening Deposit ($)</label>
                 <input
                   id="reg-deposit" type="number" className="form-input"
                   min="0" step="10"
@@ -107,32 +108,28 @@ export default function Register() {
                 />
               </div>
 
-              {/* BAC-2 Role Manipulator */}
               <div className="form-group">
-                <label className="form-label" htmlFor="reg-role" style={{ color: 'var(--orange)' }}>
-                  select user
-                </label>
+                <label className="form-label" htmlFor="reg-role">Account Category</label>
                 <select
                   id="reg-role"
                   className="form-select"
                   value={form.role}
                   onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
-                  style={{ borderColor: form.role === 'admin' ? 'var(--orange)' : 'var(--bdr2)' }}
                 >
-                  <option value="user">User (Default)</option>
-                  <option value="admin">Admin (Escalation!)</option>
+                  <option value="user">Retail Customer (Savings)</option>
+                  <option value="admin">Branch Officer (Admin)</option>
                 </select>
               </div>
             </div>
 
             <button type="submit" className="btn btn-primary btn-full mt-2" disabled={loading}>
-              {loading ? 'Creating Account…' : 'Complete Registration →'}
+              {loading ? 'Processing...' : 'Complete Online Opening →'}
             </button>
           </form>
 
           <div className="text-center mt-3">
             <span className="text-muted text-sm">Already registered? </span>
-            <Link to="/login" style={{ color: 'var(--g)', fontSize: '.84rem', fontWeight: 600 }}>Sign in</Link>
+            <Link to="/login" style={{ color: '#005691', fontSize: '.84rem', fontWeight: 700 }}>Log in here</Link>
           </div>
         </div>
       </div>

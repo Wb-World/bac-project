@@ -3,7 +3,6 @@ import Sidebar from '../components/Navbar'
 import AccountCard from '../components/AccountCard'
 import StatCard from '../components/StatCard'
 import TransactionRow from '../components/TransactionRow'
-import VulnPanel from '../components/VulnPanel'
 import { useAuth } from '../contexts/AuthContext'
 import { getTransactions, deposit, withdraw, transfer } from '../lib/api'
 
@@ -11,7 +10,7 @@ export default function Dashboard() {
   const { user, account, refreshAccount } = useAuth()
   const [txs, setTxs] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeModal, setActiveModal] = useState(null) // 'deposit' | 'withdraw' | 'transfer'
+  const [activeModal, setActiveModal] = useState(null)
   const [form, setForm] = useState({ amount: '', toAccount: '', description: '' })
   const [msg, setMsg] = useState({ type: '', text: '' })
 
@@ -60,134 +59,164 @@ export default function Dashboard() {
   const totalWithdrawals = txs.filter(t => t.type === 'withdrawal').reduce((s, t) => s + parseFloat(t.amount), 0)
 
   return (
-    <div className="app-shell">
-      <Sidebar />
-      <main className="main-content">
-        <div className="page-header flex items-center justify-between">
-          <div>
-            <h1 className="page-title">Welcome back, {user?.username} 👋</h1>
-            <p className="page-sub">Account Overview & Transaction Monitor</p>
-          </div>
-          {user?.role === 'admin' && (
-            <span className="badge badge-orange" style={{ padding: '.4rem .8rem', fontSize: '.8rem' }}>
-              ⚡ Administrator Role Active
-            </span>
-          )}
+    <div style={{ minHeight: '100vh', background: '#f4f7fa' }}>
+      <div className="bank-ticker-bar">
+        <div className="bank-ticker-left">
+          <span className="ticker-badge">NOTICE</span>
+          <span>Never share your Internet Banking Password, OTP, or Card CVV with anyone. NexusBank never calls for personal details.</span>
         </div>
+        <div style={{ fontSize: '.72rem', color: '#cbd5e1' }}>Server Time: {new Date().toLocaleTimeString()} IST</div>
+      </div>
 
-        {msg.text && (
-          <div className={`alert alert-${msg.type}`}>
-            <span className="alert-icon">{msg.type === 'success' ? '✓' : '⚠'}</span>
-            {msg.text}
-          </div>
-        )}
-
-        <div className="grid-3 mb-4">
-          <div style={{ gridColumn: 'span 2' }}>
-            {account ? (
-              <AccountCard
-                account={account}
-                onDeposit={() => setActiveModal('deposit')}
-                onWithdraw={() => setActiveModal('withdraw')}
-                onTransfer={() => setActiveModal('transfer')}
-              />
-            ) : (
-              <div className="card text-center p-4">No account found.</div>
+      <div className="app-shell">
+        <Sidebar />
+        <main className="main-content">
+          <div className="page-header flex items-center justify-between mb-3">
+            <div>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0a2540' }}>Welcome, {user?.username}</h1>
+              <p className="text-muted text-sm">Corporate Internet Banking Portal Overview</p>
+            </div>
+            {user?.role === 'admin' && (
+              <span className="badge badge-orange" style={{ padding: '.4rem .8rem', fontSize: '.75rem' }}>
+                Branch Manager Access
+              </span>
             )}
           </div>
-          <VulnPanel />
-        </div>
 
-        <div className="grid-4 mb-4">
-          <StatCard icon="💰" label="Available Balance" value={`$${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="green" />
-          <StatCard icon="⬇" label="Recent Deposits" value={`$${totalDeposits.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="blue" />
-          <StatCard icon="⬆" label="Recent Withdrawals" value={`$${totalWithdrawals.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="red" />
-          <StatCard icon="⇄" label="Total Transactions" value={txs.length} color="purple" />
-        </div>
-
-        <div className="card">
-          <div className="flex items-center justify-between mb-3">
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Recent Transactions</h3>
-            <a href={`/api/transactions/${account?.id}`} target="_blank" rel="noreferrer" className="text-xs text-red" style={{ fontWeight: 600 }}>
-              🐛 [BAC-4] IDOR API Access
-            </a>
+          <div className="security-banner">
+            <span>🛡️</span>
+            <div>
+              <strong>Security Notice:</strong> Always check that the URL displays <code>https://</code> before entering credentials. Your last login was recorded today.
+            </div>
           </div>
 
-          {loading ? (
-            <div className="text-center py-4 text-muted">Loading transactions...</div>
-          ) : txs.length === 0 ? (
-            <div className="text-center py-4 text-muted">No transactions found.</div>
-          ) : (
-            <div className="table-wrap">
-              <table className="nxs-table">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th style={{ textAlign: 'right' }}>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {txs.map(tx => (
-                    <TransactionRow key={tx.id} tx={tx} myAccountId={account?.id} />
-                  ))}
-                </tbody>
-              </table>
+          {msg.text && (
+            <div className={`alert alert-${msg.type}`}>
+              <span>{msg.type === 'success' ? '✓' : '⚠'}</span>
+              {msg.text}
             </div>
           )}
-        </div>
 
-        {/* Action Modal */}
-        {activeModal && (
-          <div className="modal-overlay" onClick={() => setActiveModal(null)}>
-            <div className="modal-box" onClick={e => e.stopPropagation()}>
-              <div className="modal-title" style={{ textTransform: 'capitalize' }}>
-                {activeModal} Funds
+          <div className="grid-3 mb-4">
+            <div style={{ gridColumn: 'span 2' }}>
+              {account ? (
+                <AccountCard
+                  account={account}
+                  onDeposit={() => setActiveModal('deposit')}
+                  onWithdraw={() => setActiveModal('withdraw')}
+                  onTransfer={() => setActiveModal('transfer')}
+                />
+              ) : (
+                <div className="card text-center p-4">Loading account details...</div>
+              )}
+            </div>
+
+            <div className="card" style={{ background: '#fff', borderTop: '4px solid #005691' }}>
+              <div className="card-header">
+                <span className="card-title">Quick Services</span>
               </div>
-              <div className="modal-sub">Perform instant transaction for {account?.account_no}</div>
-
-              <form onSubmit={handleAction}>
-                {activeModal === 'transfer' && (
-                  <div className="form-group">
-                    <label className="form-label">Destination Account UUID</label>
-                    <input
-                      type="text" className="form-input" required
-                      placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-                      value={form.toAccount}
-                      onChange={e => setForm(p => ({ ...p, toAccount: e.target.value }))}
-                    />
-                  </div>
-                )}
-                <div className="form-group">
-                  <label className="form-label">Amount ($)</label>
-                  <input
-                    type="number" className="form-input" required min="0.01" step="0.01"
-                    placeholder="0.00"
-                    value={form.amount}
-                    onChange={e => setForm(p => ({ ...p, amount: e.target.value }))}
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Description (Optional)</label>
-                  <input
-                    type="text" className="form-input"
-                    placeholder="Note..."
-                    value={form.description}
-                    onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-                  />
-                </div>
-
-                <div className="flex gap-2 mt-4">
-                  <button type="button" className="btn btn-ghost flex-1" onClick={() => setActiveModal(null)}>Cancel</button>
-                  <button type="submit" className="btn btn-primary flex-1">Confirm {activeModal}</button>
-                </div>
-              </form>
+              <div className="flex flex-col gap-2">
+                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('transfer')}>
+                  💸 Domestic Money Transfer (NEFT)
+                </button>
+                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('deposit')}>
+                  💳 Online Term Deposit
+                </button>
+                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('withdraw')}>
+                  🏧 ATM Withdrawal Token
+                </button>
+              </div>
             </div>
           </div>
-        )}
-      </main>
+
+          <div className="grid-4 mb-4">
+            <StatCard icon="💰" label="Available Balance" value={`$${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="green" />
+            <StatCard icon="⬇" label="Recent Credits" value={`$${totalDeposits.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="blue" />
+            <StatCard icon="⬆" label="Recent Debits" value={`$${totalWithdrawals.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="red" />
+            <StatCard icon="⇄" label="Total Ledger Count" value={txs.length} color="purple" />
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <span className="card-title">Recent Passbook Activity</span>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-4 text-muted">Fetching passbook records...</div>
+            ) : txs.length === 0 ? (
+              <div className="text-center py-4 text-muted">No passbook transactions found.</div>
+            ) : (
+              <div className="table-wrap">
+                <table className="nxs-table">
+                  <thead>
+                    <tr>
+                      <th>Transaction Type</th>
+                      <th>Narration</th>
+                      <th>Transaction Reference ID</th>
+                      <th>Date & Time</th>
+                      <th style={{ textAlign: 'right' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {txs.map(tx => (
+                      <TransactionRow key={tx.id} tx={tx} myAccountId={account?.id} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Action Modal */}
+          {activeModal && (
+            <div className="modal-overlay" onClick={() => setActiveModal(null)}>
+              <div className="modal-box" onClick={e => e.stopPropagation()}>
+                <div className="modal-title" style={{ textTransform: 'capitalize', color: '#0a2540' }}>
+                  {activeModal} Service
+                </div>
+                <div className="modal-sub">Account: {account?.account_no}</div>
+
+                <form onSubmit={handleAction}>
+                  {activeModal === 'transfer' && (
+                    <div className="form-group">
+                      <label className="form-label">Beneficiary Account Identifier</label>
+                      <input
+                        type="text" className="form-input" required
+                        placeholder="Enter Beneficiary Account ID"
+                        value={form.toAccount}
+                        onChange={e => setForm(p => ({ ...p, toAccount: e.target.value }))}
+                      />
+                    </div>
+                  )}
+                  <div className="form-group">
+                    <label className="form-label">Amount ($)</label>
+                    <input
+                      type="number" className="form-input" required min="0.01" step="0.01"
+                      placeholder="0.00"
+                      value={form.amount}
+                      onChange={e => setForm(p => ({ ...p, amount: e.target.value }))}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Remarks / Narration</label>
+                    <input
+                      type="text" className="form-input"
+                      placeholder="Payment remark"
+                      value={form.description}
+                      onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <button type="button" className="btn btn-ghost flex-1" onClick={() => setActiveModal(null)}>Cancel</button>
+                    <button type="submit" className="btn btn-primary flex-1">Confirm {activeModal}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   )
 }

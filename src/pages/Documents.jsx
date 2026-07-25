@@ -29,104 +29,104 @@ export default function Documents() {
   }
 
   return (
-    <div className="app-shell">
-      <Sidebar />
-      <main className="main-content">
-        <div className="page-header">
-          <h1 className="page-title">Document Vault & File Access</h1>
-          <p className="page-sub">Path Traversal & Unrestricted Access <span className="badge badge-vuln">BAC-5</span></p>
+    <div style={{ minHeight: '100vh', background: '#f4f7fa' }}>
+      <div className="bank-ticker-bar">
+        <div className="bank-ticker-left">
+          <span className="ticker-badge">DIGITAL VAULT</span>
+          <span>E-Statements and Account Certificates Retrieval System.</span>
         </div>
+      </div>
 
-        <div className="alert alert-vuln mb-4">
-          <div><strong>[BAC-5 Vulnerability Alert]</strong> The endpoint <code>/api/documents/*</code> does not sanitize file paths!</div>
-          <div className="mt-1">
-            Try accessing relative paths like <code>../env</code> or <code>statement_bob_q1.txt</code> to read unauthorized documents and server secrets.
+      <div className="app-shell">
+        <Sidebar />
+        <main className="main-content">
+          <div className="page-header">
+            <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0a2540' }}>E-Statements & Document Vault</h1>
+            <p className="page-sub">Retrieve official quarterly account statements and certificates</p>
           </div>
-        </div>
 
-        <div className="grid-3 mb-4">
-          <div className="card" style={{ gridColumn: 'span 1' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Fetch File</h3>
-
-            <form onSubmit={handleFetch}>
-              <div className="form-group">
-                <label className="form-label">Filename or Path</label>
-                <input
-                  type="text" className="form-input" required
-                  value={filename}
-                  onChange={e => setFilename(e.target.value)}
-                  placeholder="e.g. statement_alice_q1.txt or ../env"
-                />
+          <div className="grid-3 mb-4">
+            <div className="card" style={{ gridColumn: 'span 1', borderTop: '4px solid #005691' }}>
+              <div className="card-header">
+                <span className="card-title">Document Lookup</span>
               </div>
-              <button type="submit" className="btn btn-primary btn-full mt-2" disabled={loading}>
-                {loading ? 'Fetching...' : 'Request File →'}
-              </button>
-            </form>
 
-            <div className="divider-text" style={{ margin: '1.5rem 0 1rem' }}>Presets</div>
-
-            <div className="flex flex-col gap-1">
-              {[
-                { name: 'statement_alice_q1.txt', label: 'Alice Statement (Public)' },
-                { name: 'statement_bob_q1.txt', label: 'Bob Statement (Private IDOR)' },
-                { name: 'internal_config.txt', label: 'Internal Bank Secrets' },
-                { name: '../env', label: '⚡ Exploit: ../env (Path Traversal)' }
-              ].map(p => (
-                <button
-                  key={p.name}
-                  className="btn btn-ghost btn-sm"
-                  style={{ justifyContent: 'flex-start', textAlign: 'left', fontSize: '.78rem' }}
-                  onClick={() => { setFilename(p.name); setTimeout(handleFetch, 50) }}
-                >
-                  📄 {p.label}
+              <form onSubmit={handleFetch}>
+                <div className="form-group">
+                  <label className="form-label">Document Reference Path</label>
+                  <input
+                    type="text" className="form-input" required
+                    value={filename}
+                    onChange={e => setFilename(e.target.value)}
+                    placeholder="e.g. statement_alice_q1.txt"
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary btn-full mt-2" disabled={loading}>
+                  {loading ? 'Fetching...' : 'Retrieve Statement →'}
                 </button>
-              ))}
+              </form>
+
+              <div style={{ margin: '1.2rem 0 .6rem', fontSize: '.75rem', fontWeight: 700, color: '#64748b' }}>Quick Select Presets</div>
+
+              <div className="flex flex-col gap-1">
+                {[
+                  { name: 'statement_alice_q1.txt', label: 'Q1 Statement — Alice' },
+                  { name: 'statement_bob_q1.txt', label: 'Q1 Statement — Bob' },
+                  { name: 'internal_config.txt', label: 'Branch Configuration Certificate' },
+                  { name: '../env', label: 'Server System Environment Record' }
+                ].map(p => (
+                  <button
+                    key={p.name}
+                    className="btn btn-ghost btn-sm"
+                    style={{ justifyContent: 'flex-start', textAlign: 'left', fontSize: '.78rem' }}
+                    onClick={() => { setFilename(p.name); setTimeout(handleFetch, 50) }}
+                  >
+                    📄 {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="card" style={{ gridColumn: 'span 2' }}>
+              <div className="card-header">
+                <span className="card-title">Statement Document Viewer</span>
+              </div>
+
+              {error && <div className="alert alert-error">{error}</div>}
+
+              {result ? (
+                <div>
+                  <div className="form-group">
+                    <label className="form-label">Document Metadata</label>
+                    <pre style={{
+                      background: '#f8fafc', padding: '1rem', borderRadius: 4,
+                      overflowX: 'auto', fontSize: '.8rem', color: '#0a2540',
+                      border: '1px solid #cbd5e1'
+                    }}>
+                      {JSON.stringify(result, null, 2)}
+                    </pre>
+                  </div>
+
+                  {result.content && (
+                    <div className="form-group mt-3">
+                      <label className="form-label">Rendered Content</label>
+                      <div style={{
+                        background: '#ffffff', padding: '1rem', borderRadius: 4,
+                        fontFamily: 'monospace', fontSize: '.85rem', whiteSpace: 'pre-wrap',
+                        border: '1px solid #cbd5e1'
+                      }}>
+                        {result.content}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-5 text-muted">Select a document to render contents.</div>
+              )}
             </div>
           </div>
-
-          <div className="card" style={{ gridColumn: 'span 2' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Server Response</h3>
-
-            {error && <div className="alert alert-error">{error}</div>}
-
-            {result ? (
-              <div>
-                {result._vulnerability && (
-                  <div className="alert alert-vuln" style={{ fontSize: '.75rem', marginBottom: '1rem' }}>
-                    <strong>Exploit Triggered:</strong> {result._vulnerability}
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label className="form-label">JSON Response Payload</label>
-                  <pre style={{
-                    background: 'var(--c2)', padding: '1rem', borderRadius: 8,
-                    overflowX: 'auto', fontSize: '.8rem', color: 'var(--g)',
-                    border: '1px solid var(--bdr)'
-                  }}>
-                    {JSON.stringify(result, null, 2)}
-                  </pre>
-                </div>
-
-                {result.content && (
-                  <div className="form-group mt-3">
-                    <label className="form-label">Rendered Document Content</label>
-                    <div style={{
-                      background: 'rgba(255,255,255,.03)', padding: '1rem', borderRadius: 8,
-                      fontFamily: 'monospace', fontSize: '.85rem', whiteSpace: 'pre-wrap',
-                      border: '1px solid var(--bdr2)'
-                    }}>
-                      {result.content}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-5 text-muted">Submit a request to inspect the raw file output.</div>
-            )}
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }

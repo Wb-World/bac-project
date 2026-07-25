@@ -13,7 +13,6 @@ import Deposit from './pages/Deposit'
 import AdminPanel from './pages/AdminPanel'
 import Documents from './pages/Documents'
 import Profile from './pages/Profile'
-import ExploitGuide from './pages/ExploitGuide'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -32,7 +31,6 @@ export default function App() {
             <Route path="/deposit"      element={<ProtectedRoute><ErrorBoundary><Deposit /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/documents"    element={<ProtectedRoute><ErrorBoundary><Documents /></ErrorBoundary></ProtectedRoute>} />
             <Route path="/profile"      element={<ProtectedRoute><ErrorBoundary><Profile /></ErrorBoundary></ProtectedRoute>} />
-            <Route path="/exploit-guide" element={<ProtectedRoute><ErrorBoundary><ExploitGuide /></ErrorBoundary></ProtectedRoute>} />
 
             <Route path="/admin" element={<ProtectedRoute adminOnly><ErrorBoundary><AdminPanel /></ErrorBoundary></ProtectedRoute>} />
 
