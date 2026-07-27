@@ -1,175 +1,235 @@
-import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import PublicNavbar from '../components/PublicNavbar'
+import PublicFooter from '../components/PublicFooter'
 
 export default function Home() {
-  const { user, login } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const handleHomeLogin = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await login({ username, password })
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.response?.data?.error || 'Invalid credentials.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
-    <div style={{ background: '#f4f7fa', minHeight: '100vh', fontFamily: "'Open Sans', sans-serif" }}>
+    <div className="public-page-layout">
+      <PublicNavbar />
 
-      {/* Ticker */}
-      <div style={{ background: '#001730', borderBottom: '2px solid #ff9900', padding: '.35rem 1.5rem', fontSize: '.74rem', color: '#cbd5e1', display: 'flex', justifyContent: 'space-between' }}>
-        <span>📢 Official NexusBank NetBanking Portal. Available 24×7 for Instant Transfers.</span>
-        <span>📞 Customer Care: 1800-11-2211 (Toll Free)</span>
-      </div>
-
-      {/* Header */}
-      <header style={{ background: '#0a2540', borderBottom: '3px solid #ff9900', padding: '0 2rem', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '.75rem', textDecoration: 'none' }}>
-          <img src="/logo.png" alt="NexusBank" style={{ height: 38, width: 38, objectFit: 'contain', borderRadius: 4 }} />
-          <div>
-            <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-.3px' }}>NexusBank</div>
-            <div style={{ color: '#ff9900', fontSize: '.62rem', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>Online Banking</div>
-          </div>
-        </Link>
-        <div style={{ display: 'flex', gap: '.75rem', alignItems: 'center' }}>
-          {user ? (
-            <button onClick={() => navigate('/dashboard')} style={{ background: '#ff9900', color: '#001730', border: 'none', borderRadius: 4, padding: '.5rem 1.2rem', fontWeight: 800, fontSize: '.85rem', cursor: 'pointer' }}>
-              Go to Dashboard →
-            </button>
-          ) : (
-            <>
-              <Link to="/login" style={{ color: '#cbd5e1', fontSize: '.85rem', fontWeight: 600, textDecoration: 'none' }}>Login</Link>
-              <Link to="/register" style={{ background: '#ff9900', color: '#001730', borderRadius: 4, padding: '.5rem 1.2rem', fontWeight: 800, fontSize: '.85rem', textDecoration: 'none' }}>
-                Open Account
-              </Link>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section style={{ background: 'linear-gradient(135deg, #0a2540 0%, #003366 60%, #004d8a 100%)', padding: '3.5rem 2rem 3rem', color: '#fff' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '3rem', alignItems: 'center' }}>
-          <div>
-            <div style={{ background: 'rgba(255,153,0,.15)', border: '1px solid rgba(255,153,0,.3)', borderRadius: 4, display: 'inline-flex', alignItems: 'center', gap: '.5rem', padding: '.25rem .75rem', marginBottom: '1rem', fontSize: '.75rem', color: '#ff9900', fontWeight: 700, letterSpacing: '.5px' }}>
-              🔒 SECURE BANKING PORTAL
+      {/* Hero Section */}
+      <section className="hero-banner">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-pill">
+              <span>✨ NEXT-GEN INTERNET BANKING</span>
             </div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '.9rem' }}>
-              Corporate & Retail<br />
-              <span style={{ color: '#ff9900' }}>Internet Banking Services</span>
+            <h1 className="hero-title">
+              Smarter Financial Services for Modern Living
             </h1>
-            <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: 1.7, maxWidth: 480, marginBottom: '1.8rem' }}>
-              Instant fund transfers, real-time passbook, e-statements, and complete account management — all from your browser.
+            <p className="hero-sub">
+              Experience ultra-fast fund transfers, live digital passbook, instant e-statements, and institutional-grade financial security — all under one unified platform.
             </p>
-            <div style={{ display: 'flex', gap: '.75rem' }}>
+
+            <div className="hero-actions">
               {user ? (
-                <button onClick={() => navigate('/dashboard')} style={{ background: '#ff9900', color: '#001730', border: 'none', borderRadius: 4, padding: '.75rem 1.8rem', fontWeight: 800, fontSize: '.95rem', cursor: 'pointer' }}>
-                  Open Dashboard →
+                <button onClick={() => navigate('/dashboard')} className="btn btn-accent btn-lg">
+                  Access NetBanking Dashboard →
                 </button>
               ) : (
                 <>
-                  <Link to="/login" style={{ background: '#ff9900', color: '#001730', borderRadius: 4, padding: '.75rem 1.8rem', fontWeight: 800, fontSize: '.95rem', textDecoration: 'none' }}>
-                    Login to NetBanking
+                  <Link to="/register" className="btn btn-accent btn-lg">
+                    Open Digital Account in 3 Mins →
                   </Link>
-                  <Link to="/register" style={{ background: 'transparent', color: '#fff', border: '1.5px solid rgba(255,255,255,.4)', borderRadius: 4, padding: '.75rem 1.4rem', fontWeight: 600, fontSize: '.9rem', textDecoration: 'none' }}>
-                    New Registration
+                  <Link to="/login" className="btn btn-outline-light btn-lg">
+                    Login to NetBanking 🔒
                   </Link>
                 </>
               )}
             </div>
-          </div>
 
-          {/* Quick Login Card */}
-          <div style={{ background: '#fff', borderRadius: 8, padding: '1.8rem', boxShadow: '0 12px 30px rgba(0,0,0,.25)', borderTop: '4px solid #ff9900', color: '#1e293b' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', marginBottom: '1rem' }}>
-              <img src="/logo.png" alt="NexusBank" style={{ height: 32, width: 32, objectFit: 'contain' }} />
-              <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0a2540', margin: 0 }}>NetBanking Login</h3>
-                <p style={{ fontSize: '.72rem', color: '#64748b', margin: 0 }}>Retail & Corporate Accounts</p>
+            {/* Quick Metrics */}
+            <div className="hero-stats">
+              <div className="hero-stat-item">
+                <div className="hero-stat-num">5M+</div>
+                <div className="hero-stat-lbl">Active Account Holders</div>
+              </div>
+              <div className="hero-stat-item">
+                <div className="hero-stat-num">₹99.9%</div>
+                <div className="hero-stat-lbl">Uptime & Instant Processing</div>
+              </div>
+              <div className="hero-stat-item">
+                <div className="hero-stat-num">256-bit</div>
+                <div className="hero-stat-lbl">Military Grade Security</div>
               </div>
             </div>
+          </div>
 
-            {error && (
-              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 4, padding: '.5rem .8rem', fontSize: '.78rem', color: '#991b1b', marginBottom: '.8rem' }}>
-                {error}
+          <div className="hero-visual">
+            <div className="hero-card-preview">
+              <div className="preview-card-header">
+                <div className="preview-chip"></div>
+                <div className="preview-logo">NexusBank</div>
               </div>
-            )}
-
-            <form onSubmit={handleHomeLogin}>
-              <div style={{ marginBottom: '.8rem' }}>
-                <label style={{ display: 'block', fontSize: '.78rem', fontWeight: 700, color: '#0a2540', marginBottom: '.3rem' }}>User ID</label>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  placeholder="Enter User ID"
-                  style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: 4, padding: '.55rem .8rem', fontSize: '.85rem', outline: 'none' }}
-                />
+              <div className="preview-card-num">•••• •••• •••• 8842</div>
+              <div className="preview-card-footer">
+                <div>
+                  <div className="preview-lbl">ACCOUNT HOLDER</div>
+                  <div className="preview-val">EXECUTIVE MEMBER</div>
+                </div>
+                <div>
+                  <div className="preview-lbl">EXPIRES</div>
+                  <div className="preview-val">12/30</div>
+                </div>
               </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', fontSize: '.78rem', fontWeight: 700, color: '#0a2540', marginBottom: '.3rem' }}>Password</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Password"
-                  style={{ width: '100%', border: '1px solid #cbd5e1', borderRadius: 4, padding: '.55rem .8rem', fontSize: '.85rem', outline: 'none' }}
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                style={{ width: '100%', background: '#005691', color: '#fff', border: 'none', borderRadius: 4, padding: '.65rem', fontWeight: 800, fontSize: '.88rem', cursor: loading ? 'not-allowed' : 'pointer' }}
-              >
-                {loading ? 'Authenticating...' : 'Login →'}
-              </button>
-            </form>
-
-            <div style={{ textAlign: 'center', marginTop: '.8rem', fontSize: '.75rem', color: '#64748b' }}>
-              New customer? <Link to="/register" style={{ color: '#005691', fontWeight: 700 }}>Register online</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section style={{ padding: '3rem 2rem', maxWidth: 1100, margin: '0 auto' }}>
-        <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0a2540', marginBottom: '.4rem' }}>Digital Banking Services</h2>
-        <p style={{ color: '#64748b', fontSize: '.85rem', marginBottom: '1.8rem' }}>24x7 online access to your finances.</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-          {[
-            { icon: '⚡', title: 'Instant Funds Transfer', desc: 'Move money to any account instantly via NEFT, RTGS, and IMPS.' },
-            { icon: '📊', title: 'Live Digital Passbook', desc: 'Real-time transaction updates, debits, and credits tracking.' },
-            { icon: '🔒', title: 'Secure Authentication', desc: 'Protected by 256-bit encryption and tokenized session controls.' },
-            { icon: '📂', title: 'E-Statements Vault', desc: 'Retrieve quarterly statements and account tax documents.' },
-          ].map(f => (
-            <div key={f.title} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '1.3rem', borderLeft: '4px solid #005691' }}>
-              <div style={{ fontSize: '1.6rem', marginBottom: '.5rem' }}>{f.icon}</div>
-              <h3 style={{ fontSize: '.95rem', fontWeight: 700, color: '#0a2540', marginBottom: '.3rem' }}>{f.title}</h3>
-              <p style={{ fontSize: '.82rem', color: '#64748b', lineHeight: 1.6 }}>{f.desc}</p>
-            </div>
-          ))}
+      {/* Live Financial Rates Ticker Bar */}
+      <section className="rates-bar">
+        <div className="rates-container">
+          <div className="rate-item">
+            <span className="rate-label">Savings APY:</span>
+            <span className="rate-value text-green">7.25% p.a. ▲</span>
+          </div>
+          <div className="rate-item">
+            <span className="rate-label">Fixed Deposit (1 Yr):</span>
+            <span className="rate-value text-green">8.10% p.a. ▲</span>
+          </div>
+          <div className="rate-item">
+            <span className="rate-label">Home Loans From:</span>
+            <span className="rate-value text-blue">8.35% p.a.</span>
+          </div>
+          <div className="rate-item">
+            <span className="rate-label">Personal Loans:</span>
+            <span className="rate-value text-blue">10.49% p.a.</span>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ background: '#001730', color: '#64748b', padding: '1.2rem 2rem', fontSize: '.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '.5rem' }}>
-        <span>© 2026 NexusBank Ltd. All Rights Reserved.</span>
-        <span>Customer Care: 1800-11-2211 · 256-bit SSL Encrypted</span>
-      </footer>
+      {/* Services Showcase */}
+      <section className="public-section bg-light">
+        <div className="section-container">
+          <div className="section-header text-center">
+            <span className="section-subtitle">WHAT WE OFFER</span>
+            <h2 className="section-title">Comprehensive Banking Built Around You</h2>
+            <p className="section-desc">Explore tailored digital banking solutions engineered for high performance, ease, and total peace of mind.</p>
+          </div>
+
+          <div className="grid-3 gap-4">
+            <div className="service-card">
+              <div className="service-icon">⚡</div>
+              <h3>Instant Money Transfer</h3>
+              <p>Execute zero-fee NEFT, RTGS, and IMPS fund transfers 24x7 with immediate SMS & email transaction alerts.</p>
+              <Link to="/services" className="service-link">Learn More →</Link>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">📊</div>
+              <h3>Live Digital Passbook</h3>
+              <p>Track incoming credits and outgoing debits in real time with automated categorizations and smart analytics.</p>
+              <Link to="/services" className="service-link">Learn More →</Link>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">📂</div>
+              <h3>Instant E-Statements</h3>
+              <p>Retrieve official monthly and quarterly stamped PDF bank statements for tax verification and audits.</p>
+              <Link to="/services" className="service-link">Learn More →</Link>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">💳</div>
+              <h3>Smart Savings & Term Deposits</h3>
+              <p>Earn high-yield returns with automated recurring deposits, flexible lock-in periods, and auto-renewals.</p>
+              <Link to="/services" className="service-link">Learn More →</Link>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">🛡️</div>
+              <h3>256-Bit Fraud Shield</h3>
+              <p>Advanced real-time anomaly detection, encrypted session tokens, and instant card freeze tools.</p>
+              <Link to="/security" className="service-link">Learn More →</Link>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">🎧</div>
+              <h3>Dedicated 24x7 Priority Support</h3>
+              <p>Reach out to expert relationship managers and support technicians around the clock without waiting lines.</p>
+              <Link to="/contact" className="service-link">Learn More →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="public-section">
+        <div className="section-container">
+          <div className="grid-2 gap-4 items-center">
+            <div>
+              <span className="section-subtitle">TRUST & EXCELLENCE</span>
+              <h2 className="section-title">Why Millions Trust NexusBank For Internet Banking</h2>
+              <p className="text-muted mb-4">
+                We combine traditional banking reliability with modern digital convenience. Whether you are managing personal wealth or managing corporate payrolls, our system delivers speed and clarity.
+              </p>
+
+              <div className="feature-list">
+                <div className="feature-item">
+                  <div className="feature-check">✓</div>
+                  <div>
+                    <strong>Zero Hide-Away Fees</strong>
+                    <div className="text-muted text-sm">Transparent pricing structure with zero maintenance surcharges.</div>
+                  </div>
+                </div>
+                <div className="feature-item">
+                  <div className="feature-check">✓</div>
+                  <div>
+                    <strong>Instant Account Opening</strong>
+                    <div className="text-muted text-sm">Paperless e-KYC onboarding process complete in under 3 minutes.</div>
+                  </div>
+                </div>
+                <div className="feature-item">
+                  <div className="feature-check">✓</div>
+                  <div>
+                    <strong>State-of-the-Art NetBanking Portal</strong>
+                    <div className="text-muted text-sm">Streamlined UI for smooth transfers, deposits, and statement downloads.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <Link to="/register" className="btn btn-primary btn-lg">
+                  Open Your Account Now →
+                </Link>
+              </div>
+            </div>
+
+            <div className="info-box-card">
+              <h3 style={{ color: '#0a2540', fontWeight: 800, fontSize: '1.2rem', marginBottom: '1rem' }}>
+                Bank Security Guarantee
+              </h3>
+              <p style={{ color: '#475569', fontSize: '.9rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>
+                All deposits are backed by national banking deposit insurance regulations. Your digital sessions are tokenized and protected by multi-factor security protocols.
+              </p>
+              <div className="badge-row flex gap-2">
+                <span className="badge badge-blue">SSL Secure</span>
+                <span className="badge badge-green">FDIC Insured</span>
+                <span className="badge badge-orange">PCI-DSS Compliant</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="cta-banner">
+        <div className="cta-container text-center">
+          <h2 className="cta-title">Ready to Experience Modern Digital Banking?</h2>
+          <p className="cta-desc">Open an account in minutes or log into your existing NetBanking profile to get started.</p>
+          <div className="flex gap-3 justify-center mt-4">
+            <Link to="/register" className="btn btn-accent btn-lg">Get Started Online</Link>
+            <Link to="/login" className="btn btn-outline-light btn-lg">Log In to NetBanking</Link>
+          </div>
+        </div>
+      </section>
+
+      <PublicFooter />
     </div>
   )
 }

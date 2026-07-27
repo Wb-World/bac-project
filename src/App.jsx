@@ -4,6 +4,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 
 import Home from './pages/Home'
+import About from './pages/About'
+import Services from './pages/Services'
+import Security from './pages/Security'
+import Contact from './pages/Contact'
+
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -22,6 +27,11 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/security" element={<Security />} />
+            <Route path="/contact" element={<Contact />} />
+
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
@@ -41,3 +51,4 @@ export default function App() {
     </ErrorBoundary>
   )
 }
+

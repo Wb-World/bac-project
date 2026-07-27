@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from '../components/Navbar'
 import { useAuth } from '../contexts/AuthContext'
+import api from '../lib/api'
 
 export default function Deposit() {
   const { account, refreshAccount } = useAuth()
@@ -13,13 +14,12 @@ export default function Deposit() {
     setMsg({ type: '', text: '' })
     setLoading(true)
     try {
-      const api = (await import('../lib/api')).default
       const res = await api.post('/api/banking/deposit', {
         accountId: account.id,
         amount: amount,
-        description: 'Manual Deposit'
+        description: 'Online Deposit'
       })
-      setMsg({ type: 'success', text: res.data.message })
+      setMsg({ type: 'success', text: res.data.message || 'Deposit processed successfully!' })
       setAmount('')
       refreshAccount()
     } catch (err) {
@@ -30,44 +30,75 @@ export default function Deposit() {
   }
 
   return (
-    <div className="app-shell">
-      <Sidebar />
-      <main className="main-content">
-        <div className="page-header">
-          <h1 className="page-title">Deposit Funds</h1>
-          <p className="page-sub">Add money to your checking account instantly</p>
+    <div className="portal-page-wrapper">
+      <div className="bank-ticker-bar">
+        <div className="bank-ticker-left">
+          <span className="ticker-badge">INSTANT DEPOSIT</span>
+          <span>Online Deposit Portal — Credit Funds Directly to Account.</span>
         </div>
+      </div>
 
-        {msg.text && (
-          <div className={`alert alert-${msg.type}`}>
-            <span className="alert-icon">{msg.type === 'success' ? '✓' : '⚠'}</span>
-            {msg.text}
+      <div className="app-shell">
+        <Sidebar />
+        <main className="main-content">
+          <div className="page-header mb-4">
+            <h1 className="page-title">Deposit Funds</h1>
+            <p className="page-sub">Credit money to your savings account instantly</p>
           </div>
-        )}
 
-        <div className="action-card card">
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Target Account</label>
-              <input type="text" className="form-input" disabled value={`${account?.account_no} ($${parseFloat(account?.balance || 0).toFixed(2)})`} />
+          {msg.text && (
+            <div className={`alert alert-${msg.type}`}>
+              <span>{msg.type === 'success' ? '✓' : '⚠'}</span>
+              <div>{msg.text}</div>
             </div>
+          )}
 
-            <div className="form-group">
-              <label className="form-label">Amount ($)</label>
-              <input
-                type="number" className="form-input" required min="0.01" step="0.01"
-                placeholder="0.00"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-              />
-            </div>
+          <div className="card max-w-lg border-top-blue">
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">Destination Account</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  disabled
+                  value={`${account?.account_no || 'Savings'} (Balance: ₹${parseFloat(account?.balance || 0).toFixed(2)})`}
+                />
+              </div>
 
-            <button type="submit" className="btn btn-primary btn-full mt-3" disabled={loading}>
-              {loading ? 'Processing...' : 'Deposit Funds →'}
-            </button>
-          </form>
-        </div>
-      </main>
+              <div className="form-group">
+                <label className="form-label">Deposit Amount (₹) *</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  required
+                  min="0.01"
+                  step="0.01"
+                  placeholder="Enter amount to deposit"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="quick-deposit-presets flex gap-2 mb-3">
+                {[500, 1000, 5000, 10000].map(val => (
+                  <button
+                    key={val}
+                    type="button"
+                    className="btn btn-ghost btn-sm flex-1"
+                    onClick={() => setAmount(val.toString())}
+                  >
+                    +₹{val}
+                  </button>
+                ))}
+              </div>
+
+              <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
+                {loading ? 'Processing Deposit...' : 'Confirm Instant Deposit →'}
+              </button>
+            </form>
+          </div>
+        </main>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/Navbar'
 import AccountCard from '../components/AccountCard'
 import StatCard from '../components/StatCard'
@@ -8,6 +9,7 @@ import { getTransactions, deposit, withdraw, transfer } from '../lib/api'
 
 export default function Dashboard() {
   const { user, account, refreshAccount } = useAuth()
+  const navigate = useNavigate()
   const [txs, setTxs] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeModal, setActiveModal] = useState(null)
@@ -37,13 +39,13 @@ export default function Dashboard() {
     try {
       if (activeModal === 'deposit') {
         await deposit({ accountId: account.id, amount: form.amount, description: form.description || 'User Deposit' })
-        setMsg({ type: 'success', text: `Deposited $${form.amount} successfully!` })
+        setMsg({ type: 'success', text: `Deposited ₹${form.amount} successfully!` })
       } else if (activeModal === 'withdraw') {
         await withdraw({ accountId: account.id, amount: form.amount, description: form.description || 'User Withdrawal' })
-        setMsg({ type: 'success', text: `Withdrew $${form.amount} successfully!` })
+        setMsg({ type: 'success', text: `Withdrew ₹${form.amount} successfully!` })
       } else if (activeModal === 'transfer') {
         await transfer({ fromAccount: account.id, toAccount: form.toAccount, amount: form.amount, description: form.description || 'Peer Transfer' })
-        setMsg({ type: 'success', text: `Transferred $${form.amount} successfully!` })
+        setMsg({ type: 'success', text: `Transferred ₹${form.amount} successfully!` })
       }
       setActiveModal(null)
       setForm({ amount: '', toAccount: '', description: '' })
@@ -56,16 +58,18 @@ export default function Dashboard() {
 
   const totalBalance = parseFloat(account?.balance || 0)
   const totalDeposits = txs.filter(t => t.type === 'deposit').reduce((s, t) => s + parseFloat(t.amount), 0)
-  const totalWithdrawals = txs.filter(t => t.type === 'withdrawal').reduce((s, t) => s + parseFloat(t.amount), 0)
+  const totalWithdrawals = txs.filter(t => t.type === 'withdrawal' || t.type === 'transfer').reduce((s, t) => s + parseFloat(t.amount), 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f4f7fa' }}>
+    <div className="portal-page-wrapper">
       <div className="bank-ticker-bar">
         <div className="bank-ticker-left">
-          <span className="ticker-badge">NOTICE</span>
-          <span>Never share your Internet Banking Password, OTP, or Card CVV with anyone. NexusBank never calls for personal details.</span>
+          <span className="ticker-badge">SECURITY NOTICE</span>
+          <span>Never share your NetBanking Password, OTP, or CVV. NexusBank will never call requesting credentials.</span>
         </div>
-        <div style={{ fontSize: '.72rem', color: '#cbd5e1' }}>Server Time: {new Date().toLocaleTimeString()} IST</div>
+        <div style={{ fontSize: '.72rem', color: '#cbd5e1' }}>
+          Server Time: {new Date().toLocaleTimeString()}
+        </div>
       </div>
 
       <div className="app-shell">
@@ -73,12 +77,12 @@ export default function Dashboard() {
         <main className="main-content">
           <div className="page-header flex items-center justify-between mb-3">
             <div>
-              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0a2540' }}>Welcome, {user?.username}</h1>
-              <p className="text-muted text-sm">Corporate Internet Banking Portal Overview</p>
+              <h1 className="page-title">Welcome back, {user?.username}</h1>
+              <p className="page-sub">NetBanking Portal & Account Dashboard</p>
             </div>
             {user?.role === 'admin' && (
               <span className="badge badge-orange" style={{ padding: '.4rem .8rem', fontSize: '.75rem' }}>
-                Branch Manager Access
+                Branch Manager Privileged Access
               </span>
             )}
           </div>
@@ -86,18 +90,19 @@ export default function Dashboard() {
           <div className="security-banner">
             <span>🛡️</span>
             <div>
-              <strong>Security Notice:</strong> Always check that the URL displays <code>https://</code> before entering credentials. Your last login was recorded today.
+              <strong>Security Notice:</strong> Authenticated via 256-bit SSL encryption token. Your last login was validated successfully.
             </div>
           </div>
 
           {msg.text && (
             <div className={`alert alert-${msg.type}`}>
               <span>{msg.type === 'success' ? '✓' : '⚠'}</span>
-              {msg.text}
+              <div>{msg.text}</div>
             </div>
           )}
 
-          <div className="grid-3 mb-4">
+          {/* Account & Quick Services Grid */}
+          <div className="grid-3 mb-4 gap-4">
             <div style={{ gridColumn: 'span 2' }}>
               {account ? (
                 <AccountCard
@@ -111,34 +116,59 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="card" style={{ background: '#fff', borderTop: '4px solid #005691' }}>
+            {/* Quick Services Links */}
+            <div className="card border-top-blue">
               <div className="card-header">
                 <span className="card-title">Quick Services</span>
               </div>
               <div className="flex flex-col gap-2">
-                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('transfer')}>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => navigate('/transfer')}
+                >
                   💸 Domestic Money Transfer (NEFT)
                 </button>
-                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('deposit')}>
-                  💳 Online Term Deposit
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => navigate('/deposit')}
+                >
+                  💳 Online Instant Deposit
                 </button>
-                <button className="btn btn-ghost btn-sm" style={{ justifyContent: 'flex-start' }} onClick={() => setActiveModal('withdraw')}>
-                  🏧 ATM Withdrawal Token
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => navigate('/transactions')}
+                >
+                  📜 Passbook & Statement
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  style={{ justifyContent: 'flex-start' }}
+                  onClick={() => navigate('/documents')}
+                >
+                  📂 E-Documents Vault
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="grid-4 mb-4">
-            <StatCard icon="💰" label="Available Balance" value={`$${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="green" />
-            <StatCard icon="⬇" label="Recent Credits" value={`$${totalDeposits.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="blue" />
-            <StatCard icon="⬆" label="Recent Debits" value={`$${totalWithdrawals.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} color="red" />
-            <StatCard icon="⇄" label="Total Ledger Count" value={txs.length} color="purple" />
+          {/* Summary Stat Cards */}
+          <div className="grid-4 mb-4 gap-4">
+            <StatCard icon="💰" label="Available Balance" value={`₹${totalBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} color="green" />
+            <StatCard icon="⬇" label="Recent Credits" value={`₹${totalDeposits.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} color="blue" />
+            <StatCard icon="⬆" label="Recent Debits" value={`₹${totalWithdrawals.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`} color="red" />
+            <StatCard icon="⇄" label="Total Ledger Entries" value={txs.length} color="purple" />
           </div>
 
+          {/* Recent Passbook Activity */}
           <div className="card">
             <div className="card-header">
               <span className="card-title">Recent Passbook Activity</span>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/transactions')}>
+                View Full Passbook →
+              </button>
             </div>
 
             {loading ? (
@@ -152,7 +182,7 @@ export default function Dashboard() {
                     <tr>
                       <th>Transaction Type</th>
                       <th>Narration</th>
-                      <th>Transaction Reference ID</th>
+                      <th>Reference ID</th>
                       <th>Date & Time</th>
                       <th style={{ textAlign: 'right' }}>Amount</th>
                     </tr>
@@ -167,16 +197,16 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Action Modal */}
+          {/* Quick Action Modal */}
           {activeModal && (
             <div className="modal-overlay" onClick={() => setActiveModal(null)}>
               <div className="modal-box" onClick={e => e.stopPropagation()}>
                 <div className="modal-title" style={{ textTransform: 'capitalize', color: '#0a2540' }}>
                   {activeModal} Service
                 </div>
-                <div className="modal-sub">Account: {account?.account_no}</div>
+                <div className="modal-sub">Account No: {account?.account_no}</div>
 
-                <form onSubmit={handleAction}>
+                <form onSubmit={handleAction} className="mt-3">
                   {activeModal === 'transfer' && (
                     <div className="form-group">
                       <label className="form-label">Beneficiary Account Identifier</label>
@@ -189,7 +219,7 @@ export default function Dashboard() {
                     </div>
                   )}
                   <div className="form-group">
-                    <label className="form-label">Amount ($)</label>
+                    <label className="form-label">Amount (₹)</label>
                     <input
                       type="number" className="form-input" required min="0.01" step="0.01"
                       placeholder="0.00"
